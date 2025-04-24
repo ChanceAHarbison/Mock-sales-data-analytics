@@ -1,0 +1,97 @@
+#Imports needed to connect to mySQL and data analysis/visualization
+import pymysql
+import pandas as pd
+import matplotlib.pyplot as plt
+
+#Creats the connection beween this python file the mySQL server. Auto closes connection when finihsed.
+def load_data_from_mySQL(query, user, password, host, database):
+    with pymysql.connect(
+        user='root',
+        password='Dragon2299@1',
+        host='localhost',
+        database='SQL_store'
+    ) as connection:
+        return pd.read_sql(query,connection)
+
+#This is used to view the data raw and check for missing info.
+def View_data(df):
+    print(df.head())
+    print(df.isnull().sum())
+    return(df)
+
+#This Cleans the data
+def clean_data(df):
+    df['customer_name'] = df['customer_first_name'] + ' ' + df['customer_last_name']
+    df['order_date'] = pd.to_datetime(df['order_date'])
+    df['total_sales'] = df['quantity'] * df['unit_price']
+    return(df)
+
+#This shows the top 5 most sold products using a bar graph.
+def plot_top_products(df): 
+    top_products = df.groupby('product_name')['quantity'].sum().sort_values(ascending=False).head(5)
+
+    plt.figure(figsize=(10,6))
+    top_products.plot(kind='bar', color='skyblue',edgecolor='black')
+    plt.ylabel('Total Quantity Sold')
+    plt.xlabel('Product Name')
+    plt.xticks(rotation=15, ha='right')
+    plt.tight_layout()
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()
+
+#This shows sales over time using a line chart.
+def plot_monthly_sales(df):
+    df['year_month'] = df['order_date'].dt.to_period('M')
+    monthly_sales = df.groupby('year_month')['total_sales'].sum()
+
+    plt.figure(figsize=(10,6))
+    monthly_sales.plot(kind='line', color='green', marker='o')
+    plt.title('Monthly Sales Over Time')
+    plt.xlabel('Month')
+    plt.ylabel('Total Sales')
+    plt.xticks(rotation=15, ha='right')
+    plt.tight_layout()
+    plt.grid(axis='y', linestyle='--', alpha=.7)
+    plt.show()
+
+
+
+
+def main():
+    #The query used for extracting data from mySQL.
+    query = """
+    SELECT
+        o.order_id,
+        o.order_date,
+        c.first_name AS customer_first_name,
+        c.last_name AS customer_last_name,
+        s.name AS shipper_name,
+        os.name AS order_status,
+        oi.product_id,
+        p.name AS product_name,
+        oi.quantity,
+        oi.unit_price
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.customer_id
+    JOIN order_statuses os ON o.status = os.order_status_id
+    LEFT JOIN shippers s ON o.shipper_id = s.shipper_id
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    ORDER BY o.order_id;
+    """
+
+    # Load data from MySQL.
+    df = load_data_from_mySQL(query, 'root', 'Dragon2299@1', 'localhost', 'SQL_store')
+        
+    # Clean the data.
+    df = clean_data(df)
+
+    # Visualize the top 5 most sold products.
+    plot_top_products(df)
+
+    # Visualize monthly sales over time.
+    plot_monthly_sales(df)
+
+#exicutes the program.
+if __name__ == '__main__':
+    main()
