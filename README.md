@@ -11,18 +11,21 @@ This project demonstrates how to use SQL, Python, Pandas, and Matplotlib to anal
 - MySQL for querying sales data
 
 ## How to Run
-1. Clone the repository:
+1. Creat the database:
     ```
-    git clone https://github.com/your-username/sales-insights-da[Uploading create-db-store.sql…]()
-shboard.git
+    Downlaod mySQL, and copy the Mock database code into your mySQL and run the code. A new SQL_Store database should be created.
     ```
-2. Install dependencies:
+2. Install python:
+   ```
+   Use whatever methode you prefer for running python code, and then copy and past the Code then run.
+   ```
+3. Install dependencies:
     ```
     pip install pandas
     pip install matplotlib
     ```
-3. Configure the database connection in the script (`user`, `password`, `host`, `database`).
-4. Run the script:
+4. Configure the database connection in the script (`user`, `password`, `host`, `database`).
+5. Run the script:
     ```
     python sales_dashboard.py
     ```
