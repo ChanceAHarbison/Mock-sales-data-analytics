@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 def load_data_from_mySQL(query, user, password, host, database):
     with pymysql.connect(
         user='root',
-        password='Dragon2299@1',
+        password='YourPassword',
         host='localhost',
         database='SQL_store'
     ) as connection:
